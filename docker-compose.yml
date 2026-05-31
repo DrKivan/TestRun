@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: evaluat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: evaluat
+      POSTGRES_USER: evaluat
+      POSTGRES_PASSWORD: evaluat
+    ports:
+      - "5432:5432"
+    volumes:
+      - evaluat-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  evaluat-postgres-data:

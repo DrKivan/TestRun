@@ -1,0 +1,35 @@
+@EvaluaT.Api_HostAddress = http://localhost:5116
+
+POST {{EvaluaT.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "docente@evaluat.local",
+  "password": "Docente123!"
+}
+
+###
+
+GET {{EvaluaT.Api_HostAddress}}/api/questions
+Accept: application/json
+
+###
+
+POST {{EvaluaT.Api_HostAddress}}/api/students
+Content-Type: application/json
+
+{
+  "fullName": "Estudiante Local",
+  "email": "estudiante@evaluat.local"
+}
+
+###
+
+POST {{EvaluaT.Api_HostAddress}}/api/exam-sessions
+Content-Type: application/json
+
+{
+  "studentId": "00000000-0000-0000-0000-000000000000",
+  "maxQuestions": 5,
+  "policy": "Balanced"
+}
