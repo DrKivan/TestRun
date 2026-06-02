@@ -11,6 +11,7 @@ public sealed class ExamSessionTests
     {
         var question = Question.Create(
             "Programacion",
+            "Patrones de diseno",
             "Que patron encapsula algoritmos intercambiables?",
             DifficultyLevel.Medium,
             [("Factory", false), ("Strategy", true), ("Singleton", false)]);
@@ -19,6 +20,9 @@ public sealed class ExamSessionTests
             question,
             maxQuestions: 1,
             DifficultyPolicy.Balanced,
+            ExamSessionKind.Standard,
+            targetTopic: null,
+            targetCompetency: null,
             DateTime.UtcNow);
 
         session.AnswerCurrentQuestion(

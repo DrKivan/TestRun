@@ -11,6 +11,7 @@ public sealed class Question : Entity
     }
 
     public string Topic { get; private set; } = string.Empty;
+    public string Competency { get; private set; } = string.Empty;
     public string Text { get; private set; } = string.Empty;
     public DifficultyLevel Difficulty { get; private set; } = DifficultyLevel.Easy;
     public bool IsActive { get; private set; } = true;
@@ -18,6 +19,7 @@ public sealed class Question : Entity
 
     public static Question Create(
         string topic,
+        string competency,
         string text,
         DifficultyLevel difficulty,
         IEnumerable<(string Text, bool IsCorrect)> options)
@@ -27,9 +29,16 @@ public sealed class Question : Entity
             throw new ArgumentException("Topic is required.", nameof(topic));
         }
 
+        TopicCatalog.EnsureAllowed(topic);
+
         if (string.IsNullOrWhiteSpace(text))
         {
             throw new ArgumentException("Question text is required.", nameof(text));
+        }
+
+        if (string.IsNullOrWhiteSpace(competency))
+        {
+            throw new ArgumentException("Competency is required.", nameof(competency));
         }
 
         var normalizedOptions = options
@@ -42,6 +51,7 @@ public sealed class Question : Entity
         {
             Id = Guid.NewGuid(),
             Topic = topic.Trim(),
+            Competency = competency.Trim(),
             Text = text.Trim(),
             Difficulty = difficulty,
             IsActive = true
@@ -65,6 +75,7 @@ public sealed class Question : Entity
 
     public void Update(
         string topic,
+        string competency,
         string text,
         DifficultyLevel difficulty,
         IEnumerable<(string Text, bool IsCorrect)> options)
@@ -74,9 +85,16 @@ public sealed class Question : Entity
             throw new ArgumentException("Topic is required.", nameof(topic));
         }
 
+        TopicCatalog.EnsureAllowed(topic);
+
         if (string.IsNullOrWhiteSpace(text))
         {
             throw new ArgumentException("Question text is required.", nameof(text));
+        }
+
+        if (string.IsNullOrWhiteSpace(competency))
+        {
+            throw new ArgumentException("Competency is required.", nameof(competency));
         }
 
         var normalizedOptions = options
@@ -86,6 +104,7 @@ public sealed class Question : Entity
         EnsureValidOptions(normalizedOptions);
 
         Topic = topic.Trim();
+        Competency = competency.Trim();
         Text = text.Trim();
         Difficulty = difficulty;
 

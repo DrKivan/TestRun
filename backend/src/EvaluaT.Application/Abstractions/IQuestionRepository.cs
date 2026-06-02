@@ -10,6 +10,8 @@ public interface IQuestionRepository
     Task<Question?> FindNextAsync(
         DifficultyLevel difficulty,
         IReadOnlyCollection<Guid> excludedQuestionIds,
+        string? topic,
+        string? competency,
         CancellationToken cancellationToken);
 
     Task AddAsync(Question question, CancellationToken cancellationToken);

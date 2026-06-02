@@ -1,6 +1,7 @@
 using EvaluaT.Application.Abstractions;
 using EvaluaT.Domain.Auth;
 using EvaluaT.Domain.Exams;
+using EvaluaT.Domain.Lessons;
 using EvaluaT.Domain.Questions;
 using EvaluaT.Domain.Students;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ public sealed class EvaluaTDbContext : DbContext, IUnitOfWork
     public DbSet<AnswerOption> AnswerOptions => Set<AnswerOption>();
     public DbSet<ExamSession> ExamSessions => Set<ExamSession>();
     public DbSet<ExamResponse> ExamResponses => Set<ExamResponse>();
+    public DbSet<Lesson> Lessons => Set<Lesson>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -52,6 +54,7 @@ public sealed class EvaluaTDbContext : DbContext, IUnitOfWork
             entity.HasKey(question => question.Id);
             entity.Property(question => question.Id).ValueGeneratedNever();
             entity.Property(question => question.Topic).HasMaxLength(120).IsRequired();
+            entity.Property(question => question.Competency).HasMaxLength(160).IsRequired();
             entity.Property(question => question.Text).HasMaxLength(600).IsRequired();
             entity.Property(question => question.Difficulty)
                 .HasConversion<string>()
@@ -90,6 +93,13 @@ public sealed class EvaluaTDbContext : DbContext, IUnitOfWork
                 .HasConversion<string>()
                 .HasMaxLength(30)
                 .IsRequired();
+            entity.Property(session => session.Kind)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .HasDefaultValue(ExamSessionKind.Standard)
+                .IsRequired();
+            entity.Property(session => session.TargetTopic).HasMaxLength(120);
+            entity.Property(session => session.TargetCompetency).HasMaxLength(160);
             entity.Property(session => session.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20)
@@ -116,6 +126,22 @@ public sealed class EvaluaTDbContext : DbContext, IUnitOfWork
             entity.Property(response => response.SelectedOptionOrder).IsRequired();
             entity.Property(response => response.IsCorrect).IsRequired();
             entity.HasIndex(response => new { response.ExamSessionId, response.QuestionId }).IsUnique();
+        });
+
+        modelBuilder.Entity<Lesson>(entity =>
+        {
+            entity.HasKey(lesson => lesson.Id);
+            entity.Property(lesson => lesson.Id).ValueGeneratedNever();
+            entity.Property(lesson => lesson.Topic).HasMaxLength(120).IsRequired();
+            entity.Property(lesson => lesson.Competency).HasMaxLength(160);
+            entity.Property(lesson => lesson.Type)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+            entity.Property(lesson => lesson.Title).HasMaxLength(180).IsRequired();
+            entity.Property(lesson => lesson.Content).HasMaxLength(1200).IsRequired();
+            entity.Property(lesson => lesson.ResourceUrl).HasMaxLength(500);
+            entity.Property(lesson => lesson.IsActive).IsRequired();
         });
     }
 }

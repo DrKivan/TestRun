@@ -2,10 +2,15 @@ import type {
   AnswerResultResponse,
   AuthResponse,
   DifficultyPolicy,
+  ExamSessionKind,
+  ExamAnalyticsResponse,
   ExamResultSummaryResponse,
   ExamSessionResponse,
+  LessonResponse,
+  LessonType,
   OptionResponse,
   QuestionResponse,
+  Topic,
 } from './types'
 
 const apiBaseUrl = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:5116'
@@ -61,7 +66,8 @@ export async function listQuestions() {
 }
 
 export async function createQuestion(input: {
-  topic: string
+  topic: Topic
+  competency: string
   text: string
   difficulty: string
   options: Array<Pick<OptionResponse, 'text' | 'isCorrect'>>
@@ -69,6 +75,30 @@ export async function createQuestion(input: {
   return request<QuestionResponse>('/api/questions', {
     method: 'POST',
     body: JSON.stringify(input),
+  })
+}
+
+export async function listLessons() {
+  return request<LessonResponse[]>('/api/lessons')
+}
+
+export async function createLesson(input: {
+  topic: Topic
+  competency: string | null
+  type: LessonType
+  title: string
+  content: string
+  resourceUrl: string | null
+}) {
+  return request<LessonResponse>('/api/lessons', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  })
+}
+
+export async function deleteLesson(lessonId: string) {
+  await request<void>(`/api/lessons/${lessonId}`, {
+    method: 'DELETE',
   })
 }
 
@@ -82,14 +112,25 @@ export async function listExamResults() {
   return request<ExamResultSummaryResponse[]>('/api/exam-sessions')
 }
 
+export async function getExamAnalytics() {
+  return request<ExamAnalyticsResponse>('/api/exam-sessions/analytics')
+}
+
+export async function listStudentExamResults() {
+  return request<ExamResultSummaryResponse[]>('/api/exam-sessions/mine')
+}
+
 export async function startExam(
   studentId: string,
   maxQuestions: number,
   policy: DifficultyPolicy,
+  kind: ExamSessionKind,
+  targetTopic?: Topic,
+  targetCompetency?: string,
 ) {
   return request<ExamSessionResponse>('/api/exam-sessions', {
     method: 'POST',
-    body: JSON.stringify({ studentId, maxQuestions, policy }),
+    body: JSON.stringify({ studentId, maxQuestions, policy, kind, targetTopic, targetCompetency }),
   })
 }
 

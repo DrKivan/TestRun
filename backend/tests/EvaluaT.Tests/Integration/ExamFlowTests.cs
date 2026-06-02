@@ -54,6 +54,8 @@ public sealed class ExamFlowTests : IClassFixture<EvaluaTApiFactory>
         Assert.NotNull(session);
         Assert.NotNull(session.CurrentQuestion);
         Assert.Equal(SessionStatus.InProgress, session.Status);
+        Assert.Equal(ExamSessionKind.Standard, session.Kind);
+        Assert.Equal(10, session.MaxQuestions);
 
         var correctOptionOrder = questions
             .Single(question => question.Id == session.CurrentQuestion.Id)
@@ -77,6 +79,47 @@ public sealed class ExamFlowTests : IClassFixture<EvaluaTApiFactory>
         Assert.True(result.IsCorrect);
         Assert.Equal(1, result.Session.AnsweredQuestions);
         Assert.NotEqual(default, result.NextDifficulty);
+        Assert.Contains(result.Session.Diagnostic, item => item.Topic == session.CurrentQuestion.Topic);
+        Assert.Equal(3, result.Session.Diagnostic.Count);
+        Assert.Contains(result.Session.Diagnostic, item => item.Topic == "Matematica");
+        Assert.Contains(result.Session.Diagnostic, item => item.Topic == "Programacion");
+        Assert.Contains(result.Session.Diagnostic, item => item.Topic == "Ciencias");
+    }
+
+    [Fact]
+    public async Task FocusedReinforcementExam_StartsWithinTargetTopic()
+    {
+        var student = await _client.PostAsJsonAsync(
+            "/api/auth/register-student",
+            new RegisterStudentRequest("Grace Hopper", "grace@evaluat.test", "Grace12345!"),
+            JsonOptions);
+        student.EnsureSuccessStatusCode();
+        var studentAuth = await student.Content.ReadFromJsonAsync<AuthResponse>(JsonOptions);
+        Assert.NotNull(studentAuth);
+        Assert.NotNull(studentAuth.User.StudentId);
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", studentAuth.Token);
+
+        var startResponse = await _client.PostAsJsonAsync(
+            "/api/exam-sessions",
+            new StartExamRequest(
+                studentAuth.User.StudentId.Value,
+                MaxQuestions: 3,
+                DifficultyPolicy.Conservative,
+                Kind: ExamSessionKind.Reinforcement,
+                TargetTopic: "Programacion",
+                TargetCompetency: "Patrones de diseno"),
+            JsonOptions);
+        startResponse.EnsureSuccessStatusCode();
+        var session = await startResponse.Content.ReadFromJsonAsync<ExamSessionResponse>(JsonOptions);
+
+        Assert.NotNull(session);
+        Assert.NotNull(session.CurrentQuestion);
+        Assert.Equal(ExamSessionKind.Reinforcement, session.Kind);
+        Assert.Equal(3, session.MaxQuestions);
+        Assert.Equal("Programacion", session.TargetTopic);
+        Assert.Equal("Patrones de diseno", session.TargetCompetency);
+        Assert.Equal("Programacion", session.CurrentQuestion.Topic);
     }
 
     private async Task<AuthResponse> LoginAsync(string email, string password)

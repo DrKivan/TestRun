@@ -41,15 +41,30 @@ public sealed class QuestionRepository : IQuestionRepository
     public Task<Question?> FindNextAsync(
         DifficultyLevel difficulty,
         IReadOnlyCollection<Guid> excludedQuestionIds,
+        string? topic,
+        string? competency,
         CancellationToken cancellationToken)
     {
-        return _dbContext.Questions
+        var query = _dbContext.Questions
             .Include(question => question.Options)
             .Where(question =>
                 question.IsActive
                 && question.Difficulty == difficulty
-                && !excludedQuestionIds.Contains(question.Id))
+                && !excludedQuestionIds.Contains(question.Id));
+
+        if (!string.IsNullOrWhiteSpace(topic))
+        {
+            query = query.Where(question => question.Topic == topic);
+        }
+
+        if (!string.IsNullOrWhiteSpace(competency))
+        {
+            query = query.Where(question => question.Competency == competency);
+        }
+
+        return query
             .OrderBy(question => question.Topic)
+            .ThenBy(question => question.Competency)
             .ThenBy(question => question.Text)
             .FirstOrDefaultAsync(cancellationToken);
     }

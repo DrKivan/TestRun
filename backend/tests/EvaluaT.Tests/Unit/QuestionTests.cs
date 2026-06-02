@@ -10,6 +10,7 @@ public sealed class QuestionTests
         var exception = Assert.Throws<ArgumentException>(() =>
             Question.Create(
                 "Programacion",
+                "Buenas practicas",
                 "Que es DRY?",
                 DifficultyLevel.Easy,
                 [("Duplicar codigo", false), ("Reutilizar conocimiento", false)]));
@@ -22,6 +23,7 @@ public sealed class QuestionTests
     {
         var question = Question.Create(
             "Matematica",
+            "Operaciones aritmeticas",
             "Cuanto es 2 + 2?",
             DifficultyLevel.Easy,
             [("3", false), ("4", true), ("5", false)]);

@@ -2,6 +2,8 @@ using EvaluaT.Application.Abstractions;
 using EvaluaT.Application.Auth;
 using EvaluaT.Application.Common;
 using EvaluaT.Application.Exams;
+using EvaluaT.Application.Exams.Diagnostics;
+using EvaluaT.Application.Lessons;
 using EvaluaT.Application.Questions;
 using EvaluaT.Application.Students;
 using EvaluaT.Domain.Exams;
@@ -18,6 +20,7 @@ public static class DependencyInjection
         services.AddSingleton<IDifficultyAdjustmentStrategy, BalancedDifficultyAdjustmentStrategy>();
         services.AddSingleton<IDifficultyAdjustmentStrategy, ConservativeDifficultyAdjustmentStrategy>();
         services.AddSingleton<DifficultyAdjustmentStrategyFactory>();
+        services.AddSingleton<ITopicDiagnosticStrategy, CompositeTopicDiagnosticStrategy>();
 
         services.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
         services.AddScoped<IDomainEventObserver, ExamEventLogObserver>();
@@ -25,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IExamSessionService, ExamSessionService>();
 
         return services;

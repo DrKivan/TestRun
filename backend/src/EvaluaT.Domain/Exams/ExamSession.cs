@@ -17,6 +17,9 @@ public sealed class ExamSession : Entity
     public Guid? CurrentQuestionId { get; private set; }
     public int MaxQuestions { get; private set; }
     public DifficultyPolicy Policy { get; private set; }
+    public ExamSessionKind Kind { get; private set; }
+    public string? TargetTopic { get; private set; }
+    public string? TargetCompetency { get; private set; }
     public SessionStatus Status { get; private set; }
     public DateTime StartedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
@@ -32,6 +35,9 @@ public sealed class ExamSession : Entity
         Question firstQuestion,
         int maxQuestions,
         DifficultyPolicy policy,
+        ExamSessionKind kind,
+        string? targetTopic,
+        string? targetCompetency,
         DateTime startedAt)
     {
         if (studentId == Guid.Empty)
@@ -52,6 +58,9 @@ public sealed class ExamSession : Entity
             CurrentQuestionId = firstQuestion.Id,
             MaxQuestions = maxQuestions,
             Policy = policy,
+            Kind = kind,
+            TargetTopic = string.IsNullOrWhiteSpace(targetTopic) ? null : targetTopic.Trim(),
+            TargetCompetency = string.IsNullOrWhiteSpace(targetCompetency) ? null : targetCompetency.Trim(),
             Status = SessionStatus.InProgress,
             StartedAt = startedAt
         };

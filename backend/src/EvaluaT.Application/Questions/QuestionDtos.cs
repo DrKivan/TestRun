@@ -8,12 +8,14 @@ public sealed record OptionResponse(Guid Id, int Order, string Text, bool IsCorr
 
 public sealed record CreateQuestionRequest(
     string Topic,
+    string Competency,
     string Text,
     DifficultyLevel Difficulty,
     IReadOnlyList<OptionRequest> Options);
 
 public sealed record UpdateQuestionRequest(
     string Topic,
+    string Competency,
     string Text,
     DifficultyLevel Difficulty,
     IReadOnlyList<OptionRequest> Options);
@@ -21,6 +23,7 @@ public sealed record UpdateQuestionRequest(
 public sealed record QuestionResponse(
     Guid Id,
     string Topic,
+    string Competency,
     string Text,
     DifficultyLevel Difficulty,
     bool IsActive,
@@ -31,6 +34,7 @@ public sealed record PublicOptionResponse(int Order, string Text);
 public sealed record CurrentQuestionResponse(
     Guid Id,
     string Topic,
+    string Competency,
     string Text,
     DifficultyLevel Difficulty,
     IReadOnlyList<PublicOptionResponse> Options);

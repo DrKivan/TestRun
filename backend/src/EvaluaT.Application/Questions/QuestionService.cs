@@ -30,6 +30,7 @@ public sealed class QuestionService : IQuestionService
     {
         var question = Question.Create(
             request.Topic,
+            request.Competency,
             request.Text,
             request.Difficulty,
             request.Options.Select(option => (option.Text, option.IsCorrect)));
@@ -54,6 +55,7 @@ public sealed class QuestionService : IQuestionService
 
         question.Update(
             request.Topic,
+            request.Competency,
             request.Text,
             request.Difficulty,
             request.Options.Select(option => (option.Text, option.IsCorrect)));
@@ -82,6 +84,7 @@ public sealed class QuestionService : IQuestionService
         return new QuestionResponse(
             question.Id,
             question.Topic,
+            question.Competency,
             question.Text,
             question.Difficulty,
             question.IsActive,
@@ -96,6 +99,7 @@ public sealed class QuestionService : IQuestionService
         return new CurrentQuestionResponse(
             question.Id,
             question.Topic,
+            question.Competency,
             question.Text,
             question.Difficulty,
             question.Options

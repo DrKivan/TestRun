@@ -24,6 +24,26 @@ public sealed class ExamSessionsController : ControllerBase
         return Ok(await _examSessions.ListResultsAsync(cancellationToken));
     }
 
+    [Authorize(Roles = "Teacher")]
+    [HttpGet("analytics")]
+    public async Task<ActionResult<ExamAnalyticsResponse>> Analytics(CancellationToken cancellationToken)
+    {
+        return Ok(await _examSessions.GetAnalyticsAsync(cancellationToken));
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("mine")]
+    public async Task<ActionResult<IReadOnlyList<ExamResultSummaryResponse>>> ListMine(CancellationToken cancellationToken)
+    {
+        var studentId = GetStudentIdFromClaim();
+        if (studentId is null)
+        {
+            return Forbid();
+        }
+
+        return Ok(await _examSessions.ListResultsByStudentAsync(studentId.Value, cancellationToken));
+    }
+
     [Authorize(Roles = "Teacher,Student")]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ExamSessionResponse>> Get(Guid id, CancellationToken cancellationToken)
@@ -83,5 +103,11 @@ public sealed class ExamSessionsController : ControllerBase
 
         var claimValue = User.FindFirstValue("studentId");
         return Guid.TryParse(claimValue, out var claimStudentId) && claimStudentId == studentId;
+    }
+
+    private Guid? GetStudentIdFromClaim()
+    {
+        var claimValue = User.FindFirstValue("studentId");
+        return Guid.TryParse(claimValue, out var studentId) ? studentId : null;
     }
 }
